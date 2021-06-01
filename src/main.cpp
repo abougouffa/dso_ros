@@ -36,6 +36,7 @@
 #include "util/Undistort.h"
 #include "IOWrapper/Pangolin/PangolinDSOViewer.h"
 #include "IOWrapper/OutputWrapper/SampleOutputWrapper.h"
+#include "IOWrapper/OutputWrapper/PointCloudOutputWrapper.h"
 
 
 #include <ros/ros.h>
@@ -51,6 +52,7 @@ std::string vignetteFile = "";
 std::string gammaFile = "";
 std::string saveFile = "";
 bool useSampleOutput=false;
+bool usePCLOutput=false;
 
 using namespace dso;
 
@@ -71,6 +73,15 @@ void parseArgument(char* arg)
 		{
 			useSampleOutput = true;
 			printf("USING SAMPLE OUTPUT WRAPPER!\n");
+		}
+		return;
+	}
+	if(1==sscanf(arg,"pcloutput=%d",&option))
+	{
+		if(option==1)
+		{
+			usePCLOutput = true;
+			printf("USING PCL OUTPUT WRAPPER!\n");
 		}
 		return;
 	}
@@ -224,6 +235,8 @@ int main( int argc, char** argv )
     if(useSampleOutput)
         fullSystem->outputWrapper.push_back(new IOWrap::SampleOutputWrapper());
 
+    if(usePCLOutput)
+        fullSystem->outputWrapper.push_back(new IOWrap::PointCloudOutputWrapper());
 
     if(undistorter->photometricUndist != 0)
     	fullSystem->setGammaFunction(undistorter->photometricUndist->getG());
